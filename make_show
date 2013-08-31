@@ -1,0 +1,14 @@
+#!/bin/bash
+
+export PYTHONIOENCODING=UTF-8
+BASENAME=`basename $1 .wav`
+lame -S -V0 $BASENAME.wav $BASENAME.mp3 &
+oggenc -Q -q 6 $BASENAME.wav &
+wait
+tagging.py --json tags.json --target $BASENAME
+if [ -d "music" ]
+then
+    create_json music/* playlist.json
+    vim playlist.json
+    omcnotes -j playlist.json -a $BASENAME.aup > shownotes
+fi
